@@ -1,0 +1,321 @@
+# Software Requirements Specification
+## GIU Facility Management Mobile Application
+
+Team: Cloud  
+Members:
+- Toqa Eldaoushy | 13007068 (Team Lead)
+- Seif Fattah | 13003679
+- Malak Abdelnabi | 13002687
+- Sarah Ahmed | 13007752
+- Sara Samy | 13006900
+- Malak Ehab | 13006450
+
+Tutorial: T:1 | TA: Moamen Alaa
+
+---
+
+## 1. Introduction
+
+A mobile application will be created to allow members of the GIU community to report issues related to infrastructure, maintenance, sustainability, and cleanliness that need the attention of the Facility Management team. Examples of such issues include broken doors, flickering lights, open windows while the air conditioning is running, and overflowing trash bins.
+
+The system will enable the Facility Management team to receive these reports, assign the appropriate personnel, and monitor and update the status of each issue. Status updates will be visible to the users who submitted the reports.
+
+This application aims to support efficient campus maintenance and help preserve campus assets. It is expected to improve response times to reported problems, resulting in a cleaner, safer, and more comfortable environment for community members.
+
+The solution will be developed as a mobile application using **React Native with Expo**, supported by a backend built with **Node.js and RESTful APIs**.
+
+This Software Requirements Specification (SRS) document provides a comprehensive overview of the GIU Facility Management Mobile Application. It is intended for developers, project managers, testers, and stakeholders to ensure a common understanding of the proposed system.
+
+---
+
+### 1.1 Product Vision & Scope
+
+The vision of the GIU Facility Management Mobile Application is to create a seamless, efficient, and collaborative platform that empowers every member of the GIU community to participate in maintaining campus facilities, while enabling the Facility Management team to deliver faster, more effective service.
+
+**The scope includes:**
+- A mobile application for Android and iOS built with React Native and Expo
+- User authentication with four roles: Community Member, Facility Manager, Worker, and Admin
+- Ticket submission with photo attachment, location selection, category choice, and description
+- Real-time notifications for submission confirmation and status changes
+- Dashboard for managers to view, filter, and assign tickets
+- Worker view showing assigned tasks with ability to update progress and status
+- Admin functions for user management and system configuration
+- Secure cloud storage for images
+- PostgreSQL database backend with RESTful APIs
+
+---
+
+### 1.2 Definitions and Acronyms
+
+| Term | Definition |
+|------|------------|
+| SRS | Software Requirements Specification |
+| Ticket | A digital record representing a maintenance issue |
+| RBAC | Role-Based Access Control |
+| FR | Functional Requirement — what the system does |
+| NFR | Non-Functional Requirement — how well the system does it |
+| Facility Manager | Staff member who assigns and monitors tickets |
+
+---
+
+## 2. User Stories
+
+### 2.1 Community Member
+
+| ID | User Story |
+|----|------------|
+| US-CM-01 | As a Community Member, I should be able to create an account so that I can log in to the application. |
+| US-CM-02 | As a Community Member, I should be able to log in using my email and password so that I can access the application. |
+| US-CM-03 | As a Community Member, I should be able to submit an issue with its details (location, photo, and category) so that the problem can be reported accurately. |
+| US-CM-04 | As a Community Member, I should be able to add a description to the issue so that the worker understands the problem clearly. |
+| US-CM-05 | As a Community Member, I should be able to view my submitted issues so that I can track their status. |
+| US-CM-06 | As a Community Member, I should be able to log out so that my data remains secure on shared devices. |
+| US-CM-07 | As a Community Member, I should be able to view the status of my issue (Pending, In Progress, Resolved) so that I know the progress of my request. |
+
+---
+
+### 2.2 Facility Manager
+
+| ID | User Story |
+|----|------------|
+| US-FM-01 | As a Facility Manager, I should be able to create an account so that I can log in to the application. |
+| US-FM-02 | As a Facility Manager, I should be able to log in using my email and password so that I can access the application. |
+| US-FM-03 | As a Facility Manager, I should be able to log out so that my data remains secure on shared devices. |
+| US-FM-04 | As a Facility Manager, I should be able to view all submitted issues so that I can assign them to workers. |
+| US-FM-05 | As a Facility Manager, I should be able to update an issue's status so that the system reflects the current state of the issue. |
+| US-FM-06 | As a Facility Manager, I should be able to assign an issue to a worker so that the worker can start fixing it. |
+| US-FM-07 | As a Facility Manager, I should be able to close an issue after it is resolved so that the system reflects that the issue is completed. |
+
+---
+
+### 2.3 Worker
+
+| ID | User Story |
+|----|------------|
+| US-W-01 | As a Worker, I should be able to create an account so that I can log in to the application. |
+| US-W-02 | As a Worker, I should be able to log in using my email and password so that I can access the application. |
+| US-W-03 | As a Worker, I should be able to log out so that my data remains secure on shared devices. |
+| US-W-04 | As a Worker, I should be able to view my assigned issues so that I can start working on them. |
+| US-W-05 | As a Worker, I should be able to comment on an issue to indicate that the work is completed so that the facility manager can update its status. |
+| US-W-06 | As a Worker, I should be able to mark an issue as "In Progress" so that the facility manager and community member know that it is being worked on. |
+| US-W-07 | As a Worker, I should be able to upload a photo after fixing the issue so that the facility manager can verify the work. |
+
+---
+
+### 2.4 System Admin (Optional)
+
+| ID | User Story |
+|----|------------|
+| US-SA-01 | As a System Admin, I should be able to log in so that I can access the application. |
+| US-SA-02 | As a System Admin, I should be able to log out so that my data remains secure on shared devices. |
+| US-SA-03 | As a System Admin, I should be able to activate or deactivate any account so that I can ensure all users follow the system rules. |
+| US-SA-04 | As a System Admin, I should be able to view all registered users so that I can manage the system users. |
+
+---
+
+## 3. Functional Requirements
+
+### 3.1 Community Member Functional Requirements
+
+| ID | Name | Description |
+|----|------|-------------|
+| FR-CM-01 | Register | The system shall allow a Community Member to register by providing required information (name, email, password). |
+| FR-CM-02 | Login | The system shall allow a Community Member to log in using a valid email and password. |
+| FR-CM-03 | Issue Submission | The system shall allow a Community Member to submit an issue including: Location, Photo, Category, Description. |
+| FR-CM-04 | Add Description & Category | The system shall allow users to choose a ticket category (electrical, plumbing, cleanliness, sustainability) and enter a short textual description. |
+| FR-CM-05 | View Submitted Issues | The system shall allow users to view a list of all their submitted issues. |
+| FR-CM-06 | View Issue Status | The system shall display the current status of an issue (Pending / In Progress / Resolved) to the Community Member. |
+| FR-CM-07 | Logout | The system shall allow a Community Member to log out of the application. |
+| FR-CM-08 | View Ticket Details *(extra)* | The system shall allow users to open a ticket and view its full details (photos, description, category, location, status history, timestamps). |
+| FR-CM-09 | Search/Filter Tickets *(extra)* | The system shall allow users to search and filter tickets by category, status, and location. |
+
+---
+
+### 3.2 Facility Manager Functional Requirements
+
+| ID | Name | Description |
+|----|------|-------------|
+| FR-FM-01 | Account Creation | The system shall allow a Facility Manager to create an account. |
+| FR-FM-02 | User Authentication | The system shall allow a Facility Manager to log in using a valid email and password. |
+| FR-FM-03 | Manager Dashboard | The system shall provide managers with a dashboard to view all tickets and their statuses. |
+| FR-FM-04 | Assign Worker | The system shall allow managers to assign a ticket to a worker. |
+| FR-FM-05 | Update Issue Status | The system shall allow managers to update ticket status (New → Assigned → In Progress → Resolved). |
+| FR-FM-06 | Close Issue | The system shall allow a Facility Manager to close an issue once it has been resolved. |
+| FR-FM-07 | Logout | The system shall allow a Facility Manager to log out of the application. |
+| FR-FM-08 | View Ticket Details *(extra)* | The system shall allow managers to view ticket details including photos, location, category, description, reporter, and timestamps. |
+| FR-FM-09 | Set Priority *(extra)* | The system shall allow managers to set a priority level (Low / Medium / High / Urgent). |
+| FR-FM-10 | Add Internal Notes *(extra)* | The system shall allow managers to add internal notes not visible to community members. |
+
+---
+
+### 3.3 Worker Functional Requirements
+
+| ID | Name | Description |
+|----|------|-------------|
+| FR-W-01 | Account Creation | The system shall allow a Worker to create an account. |
+| FR-W-02 | User Authentication | The system shall allow a Worker to log in using a valid email and password. |
+| FR-W-03 | View Assigned Tasks | The system shall allow workers to view a list of tickets assigned to them ("My Tasks"). |
+| FR-W-04 | Change Status | The system shall allow workers to update the issue status to "In Progress". |
+| FR-W-05 | Comment on Issue | The system shall allow a Worker to add comments to an issue. |
+| FR-W-06 | Upload Completion Photo | The system shall allow a Worker to upload a photo after completing work on an issue. |
+| FR-W-07 | Logout | The system shall allow a Worker to log out of the application. |
+| FR-W-08 | Task Details *(extra)* | The system shall allow workers to view ticket details including location, photos, description, and priority. |
+
+---
+
+### 3.4 System Admin Functional Requirements
+
+| ID | Name | Description |
+|----|------|-------------|
+| FR-SA-01 | Admin Authentication | The system shall allow a System Admin to log in. |
+| FR-SA-02 | Manage Users | The system shall allow admins to create, activate/deactivate, and manage user accounts and assign roles (Community Member / Manager / Worker / Admin) using RBAC. |
+| FR-SA-03 | View Registered Users | The system shall allow a System Admin to view all registered users in the system. |
+| FR-SA-04 | Logout | The system shall allow a System Admin to log out. |
+
+---
+
+### 3.5 Product Backlog
+
+| Backlog ID | User Story ID | Priority |
+|------------|---------------|----------|
+| **Core System Features** | | |
+| PB-01 | US-CM-01 | High |
+| PB-02 | US-CM-02 | High |
+| PB-03 | US-CM-03 | High |
+| PB-04 | US-CM-04 | High |
+| PB-05 | US-CM-05 | High |
+| PB-06 | US-CM-07 | High |
+| PB-07 | US-FM-01 | High |
+| PB-08 | US-FM-02 | High |
+| PB-09 | US-W-01 | High |
+| PB-10 | US-W-02 | High |
+| **Issue Management Features** | | |
+| PB-11 | US-FM-04 | High |
+| PB-12 | US-FM-06 | High |
+| PB-13 | US-W-04 | High |
+| PB-14 | US-W-06 | High |
+| PB-15 | US-W-05 | Medium |
+| PB-16 | US-W-07 | Medium |
+| PB-17 | US-FM-05 | High |
+| PB-18 | US-FM-07 | High |
+| **Authentication & Security** | | |
+| PB-19 | US-CM-06 | Medium |
+| PB-20 | US-FM-03 | Medium |
+| PB-21 | US-W-03 | Medium |
+| **System Administration (Optional)** | | |
+| PB-22 | US-SA-01 | Low |
+| PB-23 | US-SA-02 | Low |
+| PB-24 | US-SA-03 | Low |
+| PB-25 | US-SA-04 | Low |
+
+---
+
+### 3.6 UML Use-Case Diagram
+
+*(To be added — include the system boundary, all actors: Community Member, Facility Manager, Worker, System Admin, and their use-case relationships.)*
+
+---
+
+## 4. Non-Functional Requirements
+
+### 4.1 Performance Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-01 | Response Time | The system shall load any mobile application screen within 5 seconds under normal internet conditions. |
+| NFR-02 | Ticket Submission Time | The system shall complete ticket submission, including image upload, within 10 seconds on a stable internet connection. |
+
+---
+
+### 4.2 Availability and Reliability Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-03 | System Availability | The system shall be operational during official university working hours. |
+| NFR-04 | Data Persistence | All submitted tickets and status updates shall be permanently stored in the PostgreSQL database to prevent data loss. |
+
+---
+
+### 4.3 Security Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-05 | Authentication | Users shall be required to log in before accessing any system functionality. |
+| NFR-06 | Authorization (RBAC) | The system shall enforce role-based access control to restrict actions according to user roles (Community Member, Worker, Manager, Admin). |
+| NFR-07 | Secure Communication | All communication between the mobile application and backend server shall be secured using HTTPS. |
+| NFR-08 | Password Protection | User passwords shall be stored using secure hashing algorithms (e.g., bcrypt). |
+
+---
+
+### 4.4 Usability Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-09 | Ease of Ticket Submission | A community member shall be able to submit a ticket in less than one minute. |
+| NFR-10 | User Interface Clarity | The system shall provide a simple, clear, and intuitive user interface suitable for non-technical users. |
+
+---
+
+### 4.5 Compatibility Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-11 | Mobile Compatibility | The application shall operate on Android and iOS devices using React Native with Expo. |
+| NFR-12 | Database Technology | The system shall utilize PostgreSQL as the relational database management system. |
+
+---
+
+### 4.6 Maintainability Requirements
+
+| ID | Name | Requirement |
+|----|------|-------------|
+| NFR-13 | Modular Architecture | The backend system shall follow a modular and layered architecture (routes, controllers, services) to facilitate future maintenance and updates. |
+
+---
+
+## 5. Constraints
+
+| ID | Constraint | Description |
+|----|------------|-------------|
+| C-01 | Time | The project must be completed within the academic semester timeline. All development, testing, and documentation must be finalized before the final submission deadline. |
+| C-02 | Budget | The project must rely only on free or student-accessible tools and services. Paid infrastructure or premium cloud services are out of scope. |
+| C-03 | Resources | The system will be designed and implemented by a team of six students, limiting development, testing, and maintenance capacity. |
+| C-04 | Technology | The project must use React Native, Node.js, and PostgreSQL as specified in course guidelines. |
+| C-05 | Infrastructure | The system will be hosted on free-tier cloud platforms, which may impose limits on storage, processing power, and concurrent users. |
+| C-06 | Testing | Testing will be conducted on available student devices and emulators, limiting coverage across all device types and OS versions. |
+| C-07 | Internet Dependency | The system requires an internet connection. Some functionality may be limited when the device is offline. |
+
+---
+
+## 6. Entity Relation Diagram
+
+*(To be added — include all entities, their attributes, and relationships.)*
+
+---
+
+## 7. Technology Stack
+
+| Layer | Technology |
+|-------|------------|
+| Mobile Framework | React Native (Expo) — cross-platform Android & iOS |
+| Backend Runtime | Node.js with Express.js — RESTful APIs |
+| Database | PostgreSQL |
+| Authentication & Authorization | JSON Web Tokens (JWT) with RBAC |
+| Password Security | bcrypt hashing |
+| Image Storage | Cloud storage (Cloudinary or Firebase Storage) |
+| API Communication | RESTful APIs over HTTPS |
+| Version Control | Git with GitHub |
+| Development Tools | Visual Studio Code, Postman |
+| Deployment | Cloud hosting (Render or Railway) |
+
+---
+
+## 8. Future Scope
+
+1. **Integrated Communication Module (In-App Messaging):** A commenting system within ticket details will allow workers and managers to exchange technical notes or progress updates directly on a specific ticket, reducing reliance on external communication tools.
+
+2. **Intelligent Duplicate Detection:** A "Nearby Issues" warning will alert users if a similar issue at the same location has already been reported, preventing redundant submissions.
+
+3. **Management Analytics Dashboard:** An administrative reporting tool with data visualizations for "Average Time to Resolution" and "Top Maintenance Categories" to help allocate campus resources effectively.
+
+4. **Real-Time Emergency Notifications:** Leveraging Expo Push Notification service to send instant high-priority alerts to workers for Urgent or Sustainability-related issues (e.g., water leaks, fire hazards).
