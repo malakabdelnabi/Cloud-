@@ -1,4 +1,4 @@
--- 1. Users Table
+﻿-- 1. Users Table
 CREATE TABLE IF NOT EXISTS public.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
