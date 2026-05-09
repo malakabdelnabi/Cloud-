@@ -5,7 +5,10 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>
-        {/* Screens will be added by the UI teammate */}
+        <Stack.Screen name="index" options={{ title: 'Login' }} />
+        <Stack.Screen name="home" options={{ title: 'Home' }} />
+        <Stack.Screen name="issues/index" options={{ title: 'My Issues', headerShown: true }} />
+        <Stack.Screen name="issues/submit" options={{ title: 'Submit Issue', headerShown: true }} />
       </Stack>
     </AuthProvider>
   );

@@ -1,71 +1,124 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, ScrollView, ActivityIndicator, Alert
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 
-export default function TestAuthScreen() {
-  const { login, register, logout, user, token, isLoading } = useAuth();
-  const [email, setEmail] = useState('test@example.com');
-  const [password, setPassword] = useState('password123');
-  const [name, setName] = useState('Test User');
-  const [role, setRole] = useState('Community Member');
-  const [status, setStatus] = useState('');
+export default function AuthScreen() {
+  const router = useRouter();
+  const { login, register, user, isLoading } = useAuth();
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (isLoading) return <Text>Loading...</Text>;
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/home');
+    }
+  }, [user, isLoading]);
 
-  const handleRegister = async () => {
+  const handleSubmit = async () => {
+    if (!email || !password || (!isLoginMode && !name)) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
     try {
-      setStatus('Registering...');
-      await register({ name, email, password, role });
-      setStatus('Registration successful!');
+      setIsSubmitting(true);
+      if (isLoginMode) {
+        await login({ email, password });
+      } else {
+        await register({ name, email, password, role: 'Community Member' });
+      }
+      router.replace('/home');
     } catch (err: any) {
-      setStatus(`Error: ${err.error || err.message || JSON.stringify(err)}`);
+      Alert.alert('Error', err.error || 'Something went wrong');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      setStatus('Logging in...');
-      await login({ email, password });
-      setStatus('Login successful!');
-    } catch (err: any) {
-      setStatus(`Error: ${err.error || err.message || JSON.stringify(err)}`);
-    }
-  };
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Auth Logic Test</Text>
-      
-      {user ? (
-        <View>
-          <Text>Logged in as: {user.name} ({user.role})</Text>
-          <Text>Token: {token?.substring(0, 20)}...</Text>
-          <Button title="Logout" onPress={logout} color="red" />
-        </View>
-      ) : (
-        <View style={styles.form}>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} />
-          <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
-          <TextInput placeholder="Password" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry />
-          <TextInput placeholder="Role" value={role} onChangeText={setRole} style={styles.input} />
-          
-          <View style={styles.buttons}>
-            <Button title="Test Register" onPress={handleRegister} />
-            <Button title="Test Login" onPress={handleLogin} />
-          </View>
-        </View>
+      <Text style={styles.title}>🏘️ Community App</Text>
+      <Text style={styles.subtitle}>
+        {isLoginMode ? 'Welcome back!' : 'Create your account'}
+      </Text>
+      {!isLoginMode && (
+        <>
+          <Text style={styles.label}>Full Name *</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your name"
+            value={name}
+            onChangeText={setName}
+          />
+        </>
       )}
-      
-      <Text style={styles.status}>{status}</Text>
+      <Text style={styles.label}>Email *</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <Text style={styles.label}>Password *</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      <TouchableOpacity
+        style={[styles.submitBtn, isSubmitting && styles.disabledBtn]}
+        onPress={handleSubmit}
+        disabled={isSubmitting}
+      >
+        {isSubmitting
+          ? <ActivityIndicator color="#fff" />
+          : <Text style={styles.submitText}>
+              {isLoginMode ? 'Login' : 'Register'}
+            </Text>
+        }
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.switchBtn}
+        onPress={() => setIsLoginMode(!isLoginMode)}
+      >
+        <Text style={styles.switchText}>
+          {isLoginMode
+            ? "Don't have an account? Register"
+            : 'Already have an account? Login'}
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 40, alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
-  form: { width: '100%', gap: 10 },
-  input: { borderWidth: 1, padding: 10, borderRadius: 5 },
-  buttons: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 },
-  status: { marginTop: 20, color: 'blue', textAlign: 'center' }
+  container: { flexGrow: 1, padding: 30, justifyContent: 'center', backgroundColor: '#f5f5f5' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', color: '#333', marginBottom: 8 },
+  subtitle: { fontSize: 16, textAlign: 'center', color: '#888', marginBottom: 30 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 5, color: '#555' },
+  input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
+  submitBtn: { backgroundColor: '#007AFF', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
+  disabledBtn: { backgroundColor: '#aaa' },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  switchBtn: { marginTop: 20, alignItems: 'center' },
+  switchText: { color: '#007AFF', fontSize: 14 },
 });
