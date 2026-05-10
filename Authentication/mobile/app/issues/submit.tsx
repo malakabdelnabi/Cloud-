@@ -6,6 +6,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { issueService } from '../../services/issueService';
+import { notificationService } from '../../services/notificationService';
 
 export default function SubmitIssueScreen() {
   const router = useRouter();
@@ -49,8 +50,9 @@ export default function SubmitIssueScreen() {
         } as any);
       }
       await issueService.submitIssue(formData);
-      window.alert('Issue submitted successfully!');
-      router.push('/issues');
+await notificationService.notifyIssueSubmitted(title);
+window.alert('Issue submitted successfully!');
+router.push('/issues');
     } catch (err: any) {
       window.alert(err.error || 'Failed to submit issue');
     } finally {

@@ -10,6 +10,8 @@ export default function AuthScreen() {
   const router = useRouter();
   const { login, register, user, isLoading } = useAuth();
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [selectedRole, setSelectedRole] = useState('');
+  const [roleSelected, setRoleSelected] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,9 +23,14 @@ export default function AuthScreen() {
     }
   }, [user, isLoading]);
 
+  const handleRoleSelect = (role: string) => {
+    setSelectedRole(role);
+    setRoleSelected(true);
+  };
+
   const handleSubmit = async () => {
     if (!email || !password || (!isLoginMode && !name)) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      window.alert('Please fill in all required fields');
       return;
     }
     try {
@@ -31,11 +38,12 @@ export default function AuthScreen() {
       if (isLoginMode) {
         await login({ email, password });
       } else {
-        await register({ name, email, password, role: 'Community Member' });
+        await register({ name, email, password, role: selectedRole });
       }
       router.replace('/home');
-    } catch (err: any) {
-      Alert.alert('Error', err.error || 'Something went wrong');
+    }  catch (err: any) {
+      window.alert(err.error || 'Something went wrong');
+    
     } finally {
       setIsSubmitting(false);
     }
@@ -49,12 +57,49 @@ export default function AuthScreen() {
     );
   }
 
+  // Role selection screen (only for registration)
+  if (!isLoginMode && !roleSelected) {
+    return (
+      <View style={styles.roleContainer}>
+        <Text style={styles.title}>🏘️ Community App</Text>
+        <Text style={styles.roleTitle}>I am a...</Text>
+        <Text style={styles.roleSubtitle}>Select your role to get started</Text>
+
+        <TouchableOpacity
+          style={styles.roleCard}
+          onPress={() => handleRoleSelect('Student')}
+        >
+          <Text style={styles.roleIcon}>🎓</Text>
+          <Text style={styles.roleCardTitle}>Student</Text>
+          <Text style={styles.roleCardSubtitle}>Report issues in your campus community</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.roleCard}
+          onPress={() => handleRoleSelect('Staff')}
+        >
+          <Text style={styles.roleIcon}>👔</Text>
+          <Text style={styles.roleCardTitle}>Staff</Text>
+          <Text style={styles.roleCardSubtitle}>Report and manage community issues</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.switchBtn}
+          onPress={() => setIsLoginMode(true)}
+        >
+          <Text style={styles.switchText}>Already have an account? Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🏘️ Community App</Text>
       <Text style={styles.subtitle}>
-        {isLoginMode ? 'Welcome back!' : 'Create your account'}
+        {isLoginMode ? 'Welcome back!' : `Register as ${selectedRole}`}
       </Text>
+
       {!isLoginMode && (
         <>
           <Text style={styles.label}>Full Name *</Text>
@@ -66,6 +111,7 @@ export default function AuthScreen() {
           />
         </>
       )}
+
       <Text style={styles.label}>Email *</Text>
       <TextInput
         style={styles.input}
@@ -75,6 +121,7 @@ export default function AuthScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <Text style={styles.label}>Password *</Text>
       <TextInput
         style={styles.input}
@@ -83,6 +130,7 @@ export default function AuthScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
+
       <TouchableOpacity
         style={[styles.submitBtn, isSubmitting && styles.disabledBtn]}
         onPress={handleSubmit}
@@ -95,9 +143,14 @@ export default function AuthScreen() {
             </Text>
         }
       </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.switchBtn}
-        onPress={() => setIsLoginMode(!isLoginMode)}
+        onPress={() => {
+          setIsLoginMode(!isLoginMode);
+          setRoleSelected(false);
+          setSelectedRole('');
+        }}
       >
         <Text style={styles.switchText}>
           {isLoginMode
@@ -105,6 +158,15 @@ export default function AuthScreen() {
             : 'Already have an account? Login'}
         </Text>
       </TouchableOpacity>
+
+      {!isLoginMode && (
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => setRoleSelected(false)}
+        >
+          <Text style={styles.backText}>← Change Role</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }
@@ -112,8 +174,15 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 30, justifyContent: 'center', backgroundColor: '#f5f5f5' },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  roleContainer: { flex: 1, padding: 30, justifyContent: 'center', backgroundColor: '#f5f5f5' },
   title: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', color: '#333', marginBottom: 8 },
   subtitle: { fontSize: 16, textAlign: 'center', color: '#888', marginBottom: 30 },
+  roleTitle: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', color: '#333', marginTop: 20, marginBottom: 8 },
+  roleSubtitle: { fontSize: 16, textAlign: 'center', color: '#888', marginBottom: 30 },
+  roleCard: { backgroundColor: '#fff', borderRadius: 16, padding: 24, marginBottom: 16, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
+  roleIcon: { fontSize: 48, marginBottom: 10 },
+  roleCardTitle: { fontSize: 22, fontWeight: 'bold', color: '#333', marginBottom: 6 },
+  roleCardSubtitle: { fontSize: 14, color: '#888', textAlign: 'center' },
   label: { fontSize: 14, fontWeight: '600', marginBottom: 5, color: '#555' },
   input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
   submitBtn: { backgroundColor: '#007AFF', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
@@ -121,4 +190,6 @@ const styles = StyleSheet.create({
   submitText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   switchBtn: { marginTop: 20, alignItems: 'center' },
   switchText: { color: '#007AFF', fontSize: 14 },
+  backBtn: { marginTop: 10, alignItems: 'center' },
+  backText: { color: '#888', fontSize: 14 },
 });

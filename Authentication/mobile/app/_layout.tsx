@@ -1,7 +1,13 @@
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
 import { AuthProvider } from '../context/AuthContext';
+import { notificationService } from '../services/notificationService';
 
 export default function RootLayout() {
+  useEffect(() => {
+    notificationService.requestPermissions();
+  }, []);
+
   return (
     <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>

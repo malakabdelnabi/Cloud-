@@ -66,7 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const login = async (credentials: any) => {
+    console.log('Logging in with:', credentials);
     const data = await authService.login(credentials);
+    console.log('Login response:', data);
     await storage.setItem('userToken', data.token);
     await storage.setItem('userData', JSON.stringify(data.user));
     setToken(data.token);
@@ -74,6 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (userData: any) => {
+    console.log('Registering with:', userData);
     const data = await authService.register(userData);
     await storage.setItem('userToken', data.token);
     await storage.setItem('userData', JSON.stringify(data.user));
@@ -82,11 +85,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await authService.logout();
-    await storage.deleteItem('userToken');
-    await storage.deleteItem('userData');
-    setToken(null);
-    setUser(null);
+    try {
+      await authService.logout();
+    } catch (e) {
+      // Continue logout even if API call fails
+    } finally {
+      await storage.deleteItem('userToken');
+      await storage.deleteItem('userData');
+      setToken(null);
+      setUser(null);
+    }
   };
 
   const forgotPassword = async (email: string) => {

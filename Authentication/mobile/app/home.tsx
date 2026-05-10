@@ -11,21 +11,11 @@ export default function HomeScreen() {
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/');
-          }
-        }
-      ]
-    );
+    const confirmed = window.confirm('Are you sure you want to logout?');
+    if (confirmed) {
+      await logout();
+      router.replace('/');
+    }
   };
 
   return (
