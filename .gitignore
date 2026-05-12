@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+Authentication/node_modules/
+Authentication/mobile/node_modules/
+
+# Secrets
+.env
+Authentication/.env
+Authentication/Backend/.env
+Authentication/mobile/.env
+
+# IDEs and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Expo
+.expo/
+Authentication/.expo/
+Authentication/mobile/.expo/
+dist/
+expo-env.d.ts
