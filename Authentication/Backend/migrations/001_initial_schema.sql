@@ -1,17 +1,24 @@
-﻿-- 1. Users Table
-CREATE TABLE IF NOT EXISTS public.users (
+-- 0. Drop existing tables (Order matters for foreign keys)
+DROP TABLE IF EXISTS public.ticket_comments CASCADE;
+DROP TABLE IF EXISTS public.tickets CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
+-- 1. Users Table
+CREATE TABLE public.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('Community Member', 'Facility Manager', 'Worker', 'Admin')),
     is_active BOOLEAN DEFAULT true,
+    reset_password_token TEXT,
+    reset_password_expires TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 2. Tickets Table
-CREATE TABLE IF NOT EXISTS public.tickets (
+CREATE TABLE public.tickets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     reporter_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
     assigned_to UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -28,7 +35,7 @@ CREATE TABLE IF NOT EXISTS public.tickets (
 );
 
 -- 3. Comments Table
-CREATE TABLE IF NOT EXISTS public.ticket_comments (
+CREATE TABLE public.ticket_comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     ticket_id UUID NOT NULL REFERENCES public.tickets(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
