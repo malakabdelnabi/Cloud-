@@ -2,10 +2,10 @@
   "name": "giu-facility-management-backend",
   "version": "1.0.0",
   "description": "Backend for GIU Facility Management",
-  "main": "Backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node Backend/server.js",
-    "dev": "node --watch Backend/server.js",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "jest"
   },
   "dependencies": {

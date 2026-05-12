@@ -2,7 +2,7 @@ const { randomUUID } = require('crypto');
 const path = require('path');
 const supabase = require('../config/supabase');
 
-const BUCKET = 'ticket-images';
+const BUCKET = 'tickets-images';
 
 /**
  * Helper: build a signed URL that works for ~1 hour.
