@@ -275,7 +275,7 @@ exports.getWorkers = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, name, email, is_active')
+      .select('id, name, email, is_active, created_at')
       .eq('role', 'Worker')
       .order('name', { ascending: true });
 
@@ -284,6 +284,47 @@ exports.getWorkers = async (req, res) => {
     res.json({ workers: data });
   } catch (err) {
     res.status(500).json({ error: 'Server error fetching workers' });
+  }
+};
+
+/**
+ * @desc  Activate or deactivate a worker account
+ * @route PATCH /api/manager/workers/:id/status
+ * @body  { is_active: boolean }
+ */
+exports.setWorkerStatus = async (req, res) => {
+  const { is_active } = req.body;
+
+  if (typeof is_active !== 'boolean') {
+    return res.status(400).json({ error: 'is_active must be true or false' });
+  }
+
+  try {
+    const { data: target, error: findError } = await supabase
+      .from('users')
+      .select('id, role')
+      .eq('id', req.params.id)
+      .single();
+
+    if (findError || !target) {
+      return res.status(404).json({ error: 'Worker not found' });
+    }
+    if (target.role !== 'Worker') {
+      return res.status(403).json({ error: 'Only Worker accounts can be toggled here' });
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({ is_active, updated_at: new Date() })
+      .eq('id', req.params.id)
+      .select('id, name, email, is_active')
+      .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json({ worker: data });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error updating worker status' });
   }
 };
 

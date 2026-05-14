@@ -10,6 +10,7 @@ const {
   closeTicket,
   addInternalNote,
   getWorkers,
+  setWorkerStatus,
 } = require('../controllers/managerController');
 
 const router = express.Router();
@@ -27,8 +28,9 @@ router.patch('/tickets/:id/assign', assignTicket);         // PATCH /api/manager
 router.patch('/tickets/:id/close',  closeTicket);          // PATCH /api/manager/tickets/:id/close    { internal_notes? }
 router.patch('/tickets/:id/notes',  addInternalNote);      // PATCH /api/manager/tickets/:id/notes    { internal_notes }
 
-// ── Worker lookup (for assign dropdown) ───────
-router.get('/workers', getWorkers);                        // GET  /api/manager/workers
+// ── Worker management ─────────────────────────
+router.get('/workers',              getWorkers);          // GET   /api/manager/workers
+router.patch('/workers/:id/status', setWorkerStatus);     // PATCH /api/manager/workers/:id/status  { is_active }
 
 module.exports = router;
 

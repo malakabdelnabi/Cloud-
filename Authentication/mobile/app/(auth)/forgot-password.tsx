@@ -53,7 +53,7 @@ export default function ForgotPasswordScreen() {
         </TouchableOpacity>
 
         <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>🔐</Text>
+          <Ionicons name="key" size={38} color="#fff" />
         </View>
         <Text style={styles.appName}>Forgot Password?</Text>
         <Text style={styles.subtitle}>
@@ -161,8 +161,9 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 20,
     backgroundColor: '#2347B5', alignItems: 'center',
     justifyContent: 'center', marginBottom: 16,
+    shadowColor: '#2347B5', shadowOpacity: 0.25,
+    shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6,
   },
-  logoIcon: { fontSize: 36 },
   appName: { fontSize: 26, fontWeight: 'bold', color: '#2347B5', marginBottom: 4, textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#666', marginBottom: 32, textAlign: 'center' },
 
