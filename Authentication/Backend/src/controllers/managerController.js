@@ -1,6 +1,6 @@
     const supabase = require('../config/supabase');
 
-const BUCKET = 'ticket-images';
+const BUCKET = 'tickets-images';
 
 /**
  * Helper: build a signed URL valid for ~1 hour.

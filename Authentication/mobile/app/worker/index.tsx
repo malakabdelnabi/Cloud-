@@ -6,22 +6,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { managerService, ManagerTicket, Worker } from '../../services/managerService';
+import { workerService, WorkerTicket } from '../../services/workerService';
 
 type StatusFilter = 'All' | 'Pending' | 'In Progress' | 'Resolved';
-type CategoryFilter = 'All' | 'Electrical' | 'Plumbing' | 'Cleaning' | 'Furniture';
-type DateFilter = 'All' | 'Today' | 'Past 7 days' | 'Past 30 days';
-
 const STATUS_OPTIONS: StatusFilter[] = ['All', 'Pending', 'In Progress', 'Resolved'];
-const DATE_OPTIONS: DateFilter[] = ['All', 'Today', 'Past 7 days', 'Past 30 days'];
-
-const CATEGORY_OPTIONS: { key: CategoryFilter; icon: any }[] = [
-  { key: 'All', icon: 'apps-outline' },
-  { key: 'Electrical', icon: 'flash-outline' },
-  { key: 'Plumbing', icon: 'water-outline' },
-  { key: 'Cleaning', icon: 'sparkles-outline' },
-  { key: 'Furniture', icon: 'bed-outline' },
-];
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; icon: any }> = {
   Pending:       { bg: '#FFF4E5', color: '#B26A00', icon: 'time-outline' },
@@ -29,34 +17,22 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; icon: any }> = 
   Resolved:      { bg: '#E8F5E9', color: '#2E7D32', icon: 'checkmark-circle-outline' },
 };
 
-function withinDateRange(createdAt: string, range: DateFilter) {
-  if (range === 'All') return true;
-  const created = new Date(createdAt).getTime();
-  const now = Date.now();
-  const day = 24 * 60 * 60 * 1000;
-  if (range === 'Today') {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    return created >= start.getTime();
-  }
-  if (range === 'Past 7 days')  return now - created <= 7 * day;
-  if (range === 'Past 30 days') return now - created <= 30 * day;
-  return true;
-}
+const PRIORITY_COLORS: Record<string, string> = {
+  Low: '#6c757d',
+  Medium: '#2347B5',
+  High: '#e67e22',
+  Urgent: '#e53935',
+};
 
-export default function ManagerDashboardScreen() {
+export default function WorkerDashboardScreen() {
   const { token, user } = useAuth();
   const router = useRouter();
 
-  const [tickets, setTickets] = useState<ManagerTicket[]>([]);
-  const [workersById, setWorkersById] = useState<Record<string, Worker>>({});
+  const [tickets, setTickets] = useState<WorkerTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
-  const [dateFilter, setDateFilter] = useState<DateFilter>('All');
 
   const load = async (isRefresh = false) => {
     if (!token) return;
@@ -64,31 +40,10 @@ export default function ManagerDashboardScreen() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
       setError(null);
-
-      console.log('[ManagerDashboard] role:', user?.role, '| filters:', {
-        status: statusFilter, category: categoryFilter,
-      });
-
-      const [ticketsRes, workersRes] = await Promise.all([
-        managerService.getAllTickets(token, {
-          status: statusFilter === 'All' ? undefined : statusFilter,
-          category: categoryFilter === 'All' ? undefined : categoryFilter,
-        }),
-        managerService.getWorkers(token),
-      ]);
-
-      console.log(
-        '[ManagerDashboard] tickets:', ticketsRes.tickets?.length ?? 0,
-        '| workers:', workersRes.workers?.length ?? 0,
-      );
-
-      setTickets(ticketsRes.tickets || []);
-      const map: Record<string, Worker> = {};
-      (workersRes.workers || []).forEach((w) => { map[w.id] = w; });
-      setWorkersById(map);
+      const res = await workerService.getMyTickets(token);
+      setTickets(res.tickets || []);
     } catch (err: any) {
-      console.log('[ManagerDashboard] load error:', err);
-      setError(err?.error || err?.message || 'Failed to load issues.');
+      setError(err?.error || err?.message || 'Failed to load assigned issues.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -98,12 +53,14 @@ export default function ManagerDashboardScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [token, statusFilter, categoryFilter])
+    }, [token])
   );
 
   const filteredTickets = useMemo(
-    () => tickets.filter((t) => withinDateRange(t.created_at, dateFilter)),
-    [tickets, dateFilter]
+    () => statusFilter === 'All'
+      ? tickets
+      : tickets.filter((t) => t.status === statusFilter),
+    [tickets, statusFilter]
   );
 
   const counts = useMemo(() => ({
@@ -113,14 +70,14 @@ export default function ManagerDashboardScreen() {
     resolved: tickets.filter((t) => t.status === 'Resolved').length,
   }), [tickets]);
 
-  const renderItem = ({ item }: { item: ManagerTicket }) => {
+  const renderItem = ({ item }: { item: WorkerTicket }) => {
     const s = STATUS_STYLES[item.status] || STATUS_STYLES.Pending;
-    const worker = item.assigned_to ? workersById[item.assigned_to] : null;
+    const priorityColor = PRIORITY_COLORS[item.priority] || '#2347B5';
     return (
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.85}
-        onPress={() => router.push(`/manager/issue/${item.id}` as any)}
+        onPress={() => router.push(`/worker/issue/${item.id}` as any)}
       >
         <View style={styles.cardTop}>
           <View style={styles.cardTitleWrap}>
@@ -144,9 +101,9 @@ export default function ManagerDashboardScreen() {
 
         <View style={styles.cardBottom}>
           <View style={styles.metaRow}>
-            <Ionicons name="person-outline" size={12} color="#888" />
-            <Text style={styles.metaText}>
-              {worker ? worker.name : 'Unassigned'}
+            <Ionicons name="flag-outline" size={12} color={priorityColor} />
+            <Text style={[styles.metaText, { color: priorityColor, fontWeight: '700' }]}>
+              {item.priority}
             </Text>
           </View>
           <View style={[styles.metaRow, { marginLeft: 12 }]}>
@@ -166,49 +123,12 @@ export default function ManagerDashboardScreen() {
     );
   };
 
-  const renderChipRow = <T extends string>(
-    options: readonly T[],
-    selected: T,
-    onSelect: (v: T) => void,
-    iconMap?: (v: T) => any
-  ) => (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.chipRow}
-    >
-      {options.map((opt) => {
-        const active = opt === selected;
-        return (
-          <TouchableOpacity
-            key={opt}
-            style={[styles.chip, active && styles.chipActive]}
-            onPress={() => onSelect(opt)}
-            activeOpacity={0.85}
-          >
-            {iconMap && (
-              <Ionicons
-                name={iconMap(opt)}
-                size={13}
-                color={active ? '#fff' : '#2347B5'}
-                style={{ marginRight: 4 }}
-              />
-            )}
-            <Text style={[styles.chipText, active && styles.chipTextActive]}>
-              {opt}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerHi}>Hi{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</Text>
-        <Text style={styles.headerTitle}>All Issues</Text>
-        <Text style={styles.headerSub}>Manage and assign campus reports</Text>
+        <Text style={styles.headerTitle}>Assigned Issues</Text>
+        <Text style={styles.headerSub}>Your maintenance tasks</Text>
       </View>
 
       <View style={styles.statsRow}>
@@ -220,18 +140,27 @@ export default function ManagerDashboardScreen() {
 
       <View style={styles.filtersWrap}>
         <Text style={styles.filterLabel}>Status</Text>
-        {renderChipRow(STATUS_OPTIONS, statusFilter, setStatusFilter)}
-
-        <Text style={styles.filterLabel}>Category</Text>
-        {renderChipRow(
-          CATEGORY_OPTIONS.map((c) => c.key) as CategoryFilter[],
-          categoryFilter,
-          setCategoryFilter,
-          (v) => CATEGORY_OPTIONS.find((c) => c.key === v)?.icon
-        )}
-
-        <Text style={styles.filterLabel}>Date</Text>
-        {renderChipRow(DATE_OPTIONS, dateFilter, setDateFilter)}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {STATUS_OPTIONS.map((opt) => {
+            const active = opt === statusFilter;
+            return (
+              <TouchableOpacity
+                key={opt}
+                style={[styles.chip, active && styles.chipActive]}
+                onPress={() => setStatusFilter(opt)}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                  {opt}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {loading ? (
@@ -249,9 +178,9 @@ export default function ManagerDashboardScreen() {
       ) : filteredTickets.length === 0 ? (
         <View style={styles.center}>
           <Ionicons name="file-tray-outline" size={48} color="#bbb" />
-          <Text style={styles.emptyTitle}>No issues match your filters</Text>
+          <Text style={styles.emptyTitle}>No issues assigned</Text>
           <Text style={styles.emptySub}>
-            Try resetting the filters or pull to refresh.
+            Pull to refresh or check back later.
           </Text>
         </View>
       ) : (

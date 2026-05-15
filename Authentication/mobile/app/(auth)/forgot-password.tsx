@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView
+  KeyboardAvoidingView, Platform, ScrollView, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
@@ -52,9 +52,11 @@ export default function ForgotPasswordScreen() {
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
 
-        <View style={styles.logoBox}>
-          <Ionicons name="key" size={38} color="#fff" />
-        </View>
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <Text style={styles.appName}>Forgot Password?</Text>
         <Text style={styles.subtitle}>
           No worries — we&apos;ll help you reset it.
@@ -157,13 +159,7 @@ const styles = StyleSheet.create({
   },
   backText: { color: '#2347B5', fontSize: 14, fontWeight: '600', marginLeft: 4 },
 
-  logoBox: {
-    width: 80, height: 80, borderRadius: 20,
-    backgroundColor: '#2347B5', alignItems: 'center',
-    justifyContent: 'center', marginBottom: 16,
-    shadowColor: '#2347B5', shadowOpacity: 0.25,
-    shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6,
-  },
+  logoImage: { width: 100, height: 100, marginBottom: 16, backgroundColor: 'transparent' },
   appName: { fontSize: 26, fontWeight: 'bold', color: '#2347B5', marginBottom: 4, textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#666', marginBottom: 32, textAlign: 'center' },
 

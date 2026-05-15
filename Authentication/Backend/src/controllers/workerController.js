@@ -1,7 +1,7 @@
 const { randomUUID } = require('crypto');
 const path = require('path');
 const supabase = require('../config/supabase');
-const BUCKET = 'ticket-images';
+const BUCKET = 'tickets-images';
 
 async function signedUrl(imagePath) {
   if (!imagePath) return null;
@@ -53,7 +53,7 @@ exports.addComment = async (req, res) => {
     const { userId } = req.user;
     const { data: ticket, error: findError } = await supabase.from('tickets').select('*').eq('id', req.params.id).eq('assigned_to', userId).single();
     if (findError || !ticket) return res.status(404).json({ error: 'Ticket not found or not assigned to you' });
-    const { data, error } = await supabase.from('comments').insert({ ticket_id: req.params.id, worker_id: userId, comment, created_at: new Date() }).select('*').single();
+    const { data, error } = await supabase.from('ticket_comments').insert({ ticket_id: req.params.id, user_id: userId, comment_text: comment, created_at: new Date() }).select('*').single();
     if (error) return res.status(500).json({ error: error.message });
     res.status(201).json({ message: 'Comment added successfully', comment: data });
   } catch (error) {

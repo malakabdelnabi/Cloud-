@@ -17,7 +17,7 @@ const CATEGORIES = [
 ];
 
 export default function SubmitIssueScreen() {
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
 
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [description, setDescription] = useState('');
@@ -105,13 +105,8 @@ export default function SubmitIssueScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Submit an Issue</Text>
-          <Text style={styles.headerSub}>Report a facility problem</Text>
-        </View>
-        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-          <Ionicons name="log-out-outline" size={22} color="#fff" />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Submit an Issue</Text>
+        <Text style={styles.headerSub}>Report a facility problem</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -236,12 +231,10 @@ export default function SubmitIssueScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0f4ff' },
   header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     backgroundColor: '#2347B5', paddingHorizontal: 20, paddingVertical: 16,
   },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
   headerSub: { fontSize: 12, color: '#cfd9f7', marginTop: 2 },
-  logoutBtn: { backgroundColor: '#e53935', borderRadius: 8, padding: 8 },
   scroll: { padding: 20, paddingBottom: 40 },
   label: { fontSize: 13, fontWeight: '600', color: '#333', marginBottom: 8, marginTop: 12 },
 

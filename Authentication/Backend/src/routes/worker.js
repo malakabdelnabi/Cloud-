@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { requireAuth } = require('../middleware/requireAuth');
-const { restrictTo } = require('../middleware/roleMiddleware');
+const requireAuth = require('../middleware/requireAuth');
+const authorize = require('../middleware/roleMiddleware');
 const { getMyTickets, getMyTicketById, markInProgress, addComment, uploadCompletionPhoto } = require('../controllers/workerController');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.use(requireAuth);
-router.use(restrictTo('Worker'));
+router.use(authorize('Worker'));
 
 router.get('/tickets', getMyTickets);
 router.get('/tickets/:id', getMyTicketById);

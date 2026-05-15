@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 
-export default function CommunityLayout() {
+export default function WorkerLayout() {
   const insets = useSafeAreaInsets();
   const { logout } = useAuth();
 
@@ -37,20 +37,11 @@ export default function CommunityLayout() {
       }}
     >
       <Tabs.Screen
-        name="submit"
-        options={{
-          title: 'Submit',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="my-issues"
+        name="index"
         options={{
           title: 'My Issues',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list-outline" size={size} color={color} />
+            <Ionicons name="construct-outline" size={size} color={color} />
           ),
         }}
       />

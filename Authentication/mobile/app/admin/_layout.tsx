@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 
-export default function CommunityLayout() {
+export default function AdminLayout() {
   const insets = useSafeAreaInsets();
   const { logout } = useAuth();
 
@@ -37,20 +37,11 @@ export default function CommunityLayout() {
       }}
     >
       <Tabs.Screen
-        name="submit"
+        name="index"
         options={{
-          title: 'Submit',
+          title: 'Users',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="my-issues"
-        options={{
-          title: 'My Issues',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list-outline" size={size} color={color} />
+            <Ionicons name="people-outline" size={size} color={color} />
           ),
         }}
       />
@@ -58,7 +49,7 @@ export default function CommunityLayout() {
         name="logout"
         options={{
           title: 'Logout',
-          tabBarIcon: ({ size }) => (
+          tabBarIcon: ({ color, size }) => (
             <Ionicons name="log-out-outline" size={size} color="#e53935" />
           ),
           tabBarLabelStyle: { fontSize: 12, fontWeight: '600', color: '#e53935' },
@@ -70,7 +61,6 @@ export default function CommunityLayout() {
           },
         }}
       />
-      <Tabs.Screen name="issue/[id]" options={{ href: null }} />
     </Tabs>
   );
 }

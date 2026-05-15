@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView
+  KeyboardAvoidingView, Platform, ScrollView, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
@@ -45,15 +45,15 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>🏛️</Text>
-        </View>
-        <Text style={styles.appName}>CampusCare</Text>
-        <Text style={styles.subtitle}>University Facility Management System</Text>
+        <Image
+          source={require('../../assets/images/logo-banner.png')}
+          style={styles.logoBanner}
+          resizeMode="contain"
+        />
 
         <View style={styles.card}>
-          <Text style={styles.welcome}>Welcome back</Text>
-          <Text style={styles.welcomeSub}>Sign in to manage your facility requests.</Text>
+          <Text style={styles.welcome}>Welcome to CampusCare</Text>
+          <Text style={styles.welcomeSub}>Sign in to your account.</Text>
 
           <Text style={styles.label}>University Email</Text>
           <View style={styles.inputWrapper}>
@@ -118,14 +118,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0f4ff' },
   scroll: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 24 },
-  logoBox: {
-    width: 80, height: 80, borderRadius: 20,
-    backgroundColor: '#2347B5', alignItems: 'center',
-    justifyContent: 'center', marginBottom: 16
-  },
-  logoIcon: { fontSize: 36 },
-  appName: { fontSize: 28, fontWeight: 'bold', color: '#2347B5', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 32 },
+  logoBanner: { width: 280, height: 100, marginBottom: 32, backgroundColor: 'transparent' },
   card: {
     width: '100%', backgroundColor: '#fff',
     borderRadius: 16, padding: 24,

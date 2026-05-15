@@ -24,7 +24,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; icon: any }> = 
 };
 
 export default function MyIssuesScreen() {
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
   const router = useRouter();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,13 +89,8 @@ export default function MyIssuesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>My Issues</Text>
-          <Text style={styles.headerSub}>Track your submitted reports</Text>
-        </View>
-        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-          <Ionicons name="log-out-outline" size={22} color="#fff" />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Issues</Text>
+        <Text style={styles.headerSub}>Track your submitted reports</Text>
       </View>
 
       {loading ? (
@@ -141,12 +136,10 @@ export default function MyIssuesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0f4ff' },
   header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     backgroundColor: '#2347B5', paddingHorizontal: 20, paddingVertical: 16,
   },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
   headerSub: { fontSize: 12, color: '#cfd9f7', marginTop: 2 },
-  logoutBtn: { backgroundColor: '#e53935', borderRadius: 8, padding: 8 },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   errorText: { color: '#e53935', marginTop: 8, textAlign: 'center' },

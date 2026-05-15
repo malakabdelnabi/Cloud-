@@ -177,13 +177,8 @@ export default function WorkerManagementScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerBack}>
-          <Ionicons name="arrow-back" size={22} color="#fff" />
-        </TouchableOpacity>
-        <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={styles.headerTitle}>Worker Accounts</Text>
-          <Text style={styles.headerSub}>Activate or deactivate worker access</Text>
-        </View>
+        <Text style={styles.headerTitle}>Worker Accounts</Text>
+        <Text style={styles.headerSub}>Activate or deactivate worker access</Text>
       </View>
 
       <View style={styles.statsRow}>

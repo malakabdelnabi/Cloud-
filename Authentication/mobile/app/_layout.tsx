@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
@@ -37,10 +37,11 @@ function RootContent() {
   if (isLoading) {
     return (
       <View style={styles.splash}>
-        <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>🏛️</Text>
-        </View>
-        <Text style={styles.appName}>CampusCare</Text>
+        <Image
+          source={require('../assets/images/icon.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <ActivityIndicator size="large" color="#fff" style={{ marginTop: 24 }} />
       </View>
     );
@@ -65,15 +66,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoBox: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  logoIcon: { fontSize: 36 },
-  appName: { fontSize: 28, fontWeight: 'bold', color: '#fff' },
+  logoImage: { width: 120, height: 120, marginBottom: 16, backgroundColor: 'transparent' },
 });
