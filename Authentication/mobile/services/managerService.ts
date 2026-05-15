@@ -183,6 +183,21 @@ export const managerService = {
     return data;
   },
 
+  async deleteTicket(token: string, id: string): Promise<void> {
+    const response = await fetch(`${API_URL}/tickets/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      let payload: any = {};
+      try { payload = await response.json(); } catch {}
+      throw payload;
+    }
+  },
+
   async getWorkers(token: string): Promise<{ workers: Worker[] }> {
     const response = await fetch(`${API_URL}/workers`, {
       method: 'GET',

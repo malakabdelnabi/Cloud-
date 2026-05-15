@@ -34,6 +34,7 @@ export default function ManagerIssueDetailScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [workerQuery, setWorkerQuery] = useState('');
   const [assigning, setAssigning] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadAll = async () => {
     if (!token || !id) return;
@@ -91,6 +92,32 @@ export default function ManagerIssueDetailScreen() {
     } finally {
       setAssigning(false);
     }
+  };
+
+  const handleDelete = () => {
+    if (!token || !ticket) return;
+    Alert.alert(
+      'Delete issue',
+      'This permanently removes the ticket and its photos. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setDeleting(true);
+              await managerService.deleteTicket(token, ticket.id);
+              router.back();
+            } catch (err: any) {
+              Alert.alert('Delete failed', err?.error || 'Could not delete this issue.');
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   if (loading) {
@@ -287,6 +314,26 @@ export default function ManagerIssueDetailScreen() {
               </View>
             </>
           ) : null}
+
+          <Text style={styles.sectionLabel}>Danger zone</Text>
+          <TouchableOpacity
+            style={[styles.deleteBtn, deleting && styles.deleteBtnDisabled]}
+            onPress={handleDelete}
+            disabled={deleting}
+            activeOpacity={0.85}
+          >
+            {deleting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="trash-outline" size={18} color="#fff" />
+                <Text style={styles.deleteBtnText}>Delete issue</Text>
+              </>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.deleteHint}>
+            This permanently removes the ticket and any attached photos.
+          </Text>
         </View>
       </ScrollView>
 
@@ -488,6 +535,17 @@ const styles = StyleSheet.create({
     borderRadius: 10, borderLeftWidth: 3, borderLeftColor: '#2347B5',
   },
   noteText: { flex: 1, fontSize: 14, color: '#333', marginLeft: 8, lineHeight: 20 },
+
+  deleteBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingVertical: 12, borderRadius: 10,
+    backgroundColor: '#e53935',
+  },
+  deleteBtnDisabled: { opacity: 0.6 },
+  deleteBtnText: { color: '#fff', fontWeight: '700', marginLeft: 8, fontSize: 14 },
+  deleteHint: {
+    fontSize: 12, color: '#888', marginTop: 8, textAlign: 'center',
+  },
 
   errorText: { color: '#e53935', marginTop: 8, textAlign: 'center' },
   retryBtn: {

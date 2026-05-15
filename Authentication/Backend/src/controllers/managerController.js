@@ -263,6 +263,41 @@ exports.addInternalNote = async (req, res) => {
   }
 };
 
+/**
+ * @desc  Delete a ticket (and its storage images)
+ * @route DELETE /api/manager/tickets/:id
+ */
+exports.deleteTicket = async (req, res) => {
+  try {
+    const { data: row, error: findError } = await supabase
+      .from('tickets')
+      .select('id, photo_path, completion_photo_path')
+      .eq('id', req.params.id)
+      .single();
+
+    if (findError || !row) return res.status(404).json({ error: 'Ticket not found' });
+
+    const { error: deleteRowError } = await supabase
+      .from('tickets')
+      .delete()
+      .eq('id', row.id);
+
+    if (deleteRowError) return res.status(500).json({ error: deleteRowError.message });
+
+    const filesToDelete = [];
+    if (row.photo_path) filesToDelete.push(row.photo_path);
+    if (row.completion_photo_path) filesToDelete.push(row.completion_photo_path);
+
+    if (filesToDelete.length > 0) {
+      await supabase.storage.from(BUCKET).remove(filesToDelete);
+    }
+
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: 'Server error deleting ticket' });
+  }
+};
+
 // ─────────────────────────────────────────────
 // WORKER MANAGEMENT
 // ─────────────────────────────────────────────

@@ -9,6 +9,7 @@ const {
   assignTicket,
   closeTicket,
   addInternalNote,
+  deleteTicket,
   getWorkers,
   setWorkerStatus,
 } = require('../controllers/managerController');
@@ -27,6 +28,7 @@ router.patch('/tickets/:id/priority', updateTicketPriority); // PATCH /api/manag
 router.patch('/tickets/:id/assign', assignTicket);         // PATCH /api/manager/tickets/:id/assign   { worker_id }
 router.patch('/tickets/:id/close',  closeTicket);          // PATCH /api/manager/tickets/:id/close    { internal_notes? }
 router.patch('/tickets/:id/notes',  addInternalNote);      // PATCH /api/manager/tickets/:id/notes    { internal_notes }
+router.delete('/tickets/:id',       deleteTicket);         // DELETE /api/manager/tickets/:id        — removes ticket + storage images
 
 // ── Worker management ─────────────────────────
 router.get('/workers',              getWorkers);          // GET   /api/manager/workers
