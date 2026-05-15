@@ -3,8 +3,8 @@ import {
   View, Text, FlatList, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert, SafeAreaView
 } from 'react-native';
-import { useAuth } from '../context/AuthContext';
-import { adminService } from '../services/adminService';
+import { useAuth } from '../../context/AuthContext';
+import { adminService } from '../../services/adminService';
 import { Ionicons } from '@expo/vector-icons';
 
 type User = {
@@ -16,7 +16,7 @@ type User = {
 };
 
 export default function AdminScreen() {
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,15 +48,10 @@ export default function AdminScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>User Management</Text>
-        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-          <Ionicons name="log-out-outline" size={22} color="#fff" />
-        </TouchableOpacity>
       </View>
 
-      {/* User List */}
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
@@ -64,23 +59,24 @@ export default function AdminScreen() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.cardLeft}>
-              {/* Avatar */}
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>
                   {item.name.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              {/* Info */}
-              <View>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.email}>{item.email}</Text>
+              <View style={styles.info}>
+                <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+                  {item.name}
+                </Text>
+                <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
+                  {item.email}
+                </Text>
                 <View style={styles.roleBadge}>
                   <Text style={styles.roleText}>{item.role.toUpperCase()}</Text>
                 </View>
               </View>
             </View>
 
-            {/* Button */}
             <TouchableOpacity
               style={[styles.btn, item.is_active ? styles.deactivateBtn : styles.activateBtn]}
               onPress={() => toggleStatus(item)}
@@ -104,25 +100,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, paddingVertical: 16,
   },
   title: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
-  logoutBtn: {
-    backgroundColor: '#e53935', borderRadius: 8,
-    padding: 8,
-  },
   list: { padding: 16 },
   card: {
     backgroundColor: '#fff', borderRadius: 12,
     padding: 16, marginBottom: 12,
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', elevation: 2,
+    flexDirection: 'row', alignItems: 'center',
+    elevation: 2,
     shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8,
   },
-  cardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  cardLeft: {
+    flexDirection: 'row', alignItems: 'center',
+    flex: 1, minWidth: 0,
+  },
   avatar: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: '#2347B5', alignItems: 'center',
     justifyContent: 'center', marginRight: 12,
   },
   avatarText: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
+  info: { flex: 1, flexShrink: 1, minWidth: 0 },
   name: { fontSize: 15, fontWeight: 'bold', color: '#111' },
   email: { fontSize: 12, color: '#666', marginTop: 2 },
   roleBadge: {
@@ -133,7 +129,8 @@ const styles = StyleSheet.create({
   roleText: { fontSize: 10, color: '#2347B5', fontWeight: '600' },
   btn: {
     paddingHorizontal: 12, paddingVertical: 8,
-    borderRadius: 8, marginLeft: 8,
+    borderRadius: 8, marginLeft: 10,
+    flexShrink: 0,
   },
   activateBtn: { backgroundColor: '#4CAF50' },
   deactivateBtn: { backgroundColor: '#e53935' },

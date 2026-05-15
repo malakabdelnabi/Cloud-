@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView
+  KeyboardAvoidingView, Platform, ScrollView, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 
@@ -17,26 +17,26 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const handleLogin = async () => {
-  if (!email || !password) {
-    Alert.alert('Error', 'Please fill in all fields');
-    return;
-  }
-  try {
-    setLoading(true);
-    await login({ email, password });
-    const storedUser = await SecureStore.getItemAsync('userData');
-    const user = JSON.parse(storedUser!);
-    if (user.role === 'Admin') router.replace('/admin' as any);
-else if (user.role === 'Facility Manager') router.replace('/manager' as any);
-else if (user.role === 'Worker') router.replace('/worker' as any);
-else router.replace('/community' as any);
-  } catch (err: any) {
-    Alert.alert('Login Failed', err.error || 'Invalid email or password');
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+    try {
+      setLoading(true);
+      await login({ email, password });
+      const storedUser = await SecureStore.getItemAsync('userData');
+      const user = JSON.parse(storedUser!);
+      if (user.role === 'Admin') router.replace('/admin' as any);
+      else if (user.role === 'Facility Manager') router.replace('/manager' as any);
+      else if (user.role === 'Worker') router.replace('/worker' as any);
+      else router.replace('/community/submit' as any);
+    } catch (err: any) {
+      Alert.alert('Login Failed', err.error || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -45,19 +45,20 @@ else router.replace('/community' as any);
     >
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>🏛️</Text>
-        </View>
-        <Text style={styles.appName}>CampusCare</Text>
-        <Text style={styles.subtitle}>University Facility Management System</Text>
+        <Image
+          source={require('../../assets/images/logo-banner.png')}
+          style={styles.logoBanner}
+          resizeMode="contain"
+        />
 
         <View style={styles.card}>
-          <Text style={styles.welcome}>Welcome back</Text>
-          <Text style={styles.welcomeSub}>Sign in to manage your facility requests.</Text>
+          <Text style={styles.welcome}>Welcome to CampusCare</Text>
+          <Text style={styles.welcomeSub}>Sign in to your account.</Text>
 
           <Text style={styles.label}>University Email</Text>
           <View style={styles.inputWrapper}>
-<Ionicons name="mail-outline" size={18} color="#aaa" style={{ marginRight: 8 }} />            <TextInput
+            <Ionicons name="mail-outline" size={18} color="#aaa" style={{ marginRight: 8 }} />
+            <TextInput
               style={styles.input}
               placeholder="name@university.edu"
               placeholderTextColor="#aaa"
@@ -70,7 +71,8 @@ else router.replace('/community' as any);
 
           <Text style={styles.label}>Password</Text>
           <View style={styles.inputWrapper}>
-<Ionicons name="lock-closed-outline" size={18} color="#aaa" style={{ marginRight: 8 }} />            <TextInput
+            <Ionicons name="lock-closed-outline" size={18} color="#aaa" style={{ marginRight: 8 }} />
+            <TextInput
               style={styles.input}
               placeholder="••••••••"
               placeholderTextColor="#aaa"
@@ -78,17 +80,17 @@ else router.replace('/community' as any);
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
             />
-           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-  <Ionicons 
-    name={showPassword ? 'eye-off-outline' : 'eye-outline'} 
-    size={20} 
-    color="#aaa" 
-  />
-</TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={20}
+                color="#aaa"
+              />
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
-            // onPress={() => router.push('/forgot-password')}
+            onPress={() => router.push('/forgot-password' as any)}
             style={styles.forgotWrapper}
           >
             <Text style={styles.forgot}>Forgot Password?</Text>
@@ -102,7 +104,7 @@ else router.replace('/community' as any);
           </TouchableOpacity>
         </View>
 
-       <TouchableOpacity  onPress={() => router.push('/register')}>
+        <TouchableOpacity onPress={() => router.push('/register' as any)}>
           <Text style={styles.registerText}>
             Don't have an account? <Text style={styles.registerLink}>Register</Text>
           </Text>
@@ -116,14 +118,7 @@ else router.replace('/community' as any);
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0f4ff' },
   scroll: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 24 },
-  logoBox: {
-    width: 80, height: 80, borderRadius: 20,
-    backgroundColor: '#2347B5', alignItems: 'center',
-    justifyContent: 'center', marginBottom: 16
-  },
-  logoIcon: { fontSize: 36 },
-  appName: { fontSize: 28, fontWeight: 'bold', color: '#2347B5', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 32 },
+  logoBanner: { width: 280, height: 100, marginBottom: 32, backgroundColor: 'transparent' },
   card: {
     width: '100%', backgroundColor: '#fff',
     borderRadius: 16, padding: 24,
@@ -139,7 +134,6 @@ const styles = StyleSheet.create({
     borderRadius: 10, paddingHorizontal: 12,
     marginBottom: 16, backgroundColor: '#fafafa'
   },
-  inputIcon: { fontSize: 16, marginRight: 8 },
   input: { flex: 1, paddingVertical: 12, fontSize: 14, color: '#333' },
   forgotWrapper: { alignItems: 'flex-end', marginBottom: 20 },
   forgot: { color: '#2347B5', fontSize: 13, fontWeight: '600' },

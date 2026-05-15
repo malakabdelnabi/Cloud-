@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView
+  KeyboardAvoidingView, Platform, ScrollView, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
@@ -43,10 +43,11 @@ export default function RegisterScreen() {
     >
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>🏛️</Text>
-        </View>
-        <Text style={styles.appName}>CampusCare</Text>
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <Text style={styles.subtitle}>Create your account</Text>
 
         <View style={styles.card}>
@@ -141,13 +142,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0f4ff' },
   scroll: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 24 },
-  logoBox: {
-    width: 80, height: 80, borderRadius: 20,
-    backgroundColor: '#2347B5', alignItems: 'center',
-    justifyContent: 'center', marginBottom: 16
-  },
-  logoIcon: { fontSize: 36 },
-  appName: { fontSize: 28, fontWeight: 'bold', color: '#2347B5', marginBottom: 4 },
+  logoImage: { width: 100, height: 100, marginBottom: 12, backgroundColor: 'transparent' },
   subtitle: { fontSize: 14, color: '#666', marginBottom: 32 },
   card: {
     width: '100%', backgroundColor: '#fff',
